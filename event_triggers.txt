@@ -1,0 +1,20 @@
+// title trigger named t1
+t1,TITLE,Russia
+
+// description trigger named t2
+t2,DESCRIPTION,war
+
+// composite trigger named t3
+t3,AND,t1,t2
+
+// description trigger named t4
+t4,DESCRIPTION,Champions Leagues
+
+// title description named t5
+t5,TITLE,UCL
+
+// composite trigger named t6
+t6,OR,t4,t5
+
+// the trigger list contains t3 and t6
+ADD,t3,t6
