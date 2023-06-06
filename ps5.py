@@ -35,14 +35,18 @@ def process(url):
         guid = entry.guid
         title = translate_html(entry.title)
         link = entry.link
-        description = translate_html(entry.description)
+        try:
+            description = translate_html(entry.description)
+        except AttributeError:
+            description = "no description"
         pubdate = translate_html(entry.published)
 
         try:
             pubdate = datetime.strptime(pubdate, "%a, %d %b %Y %H:%M:%S %Z")
             pubdate.replace(tzinfo=pytz.timezone("GMT"))
         except ValueError:
-            pubdate = datetime.strptime(pubdate, "%a, %d %b %Y %H:%M:%S %z")
+            pubdate = datetime.strptime(pubdate, "%Y-%m-%dT%H:%M:%SZ")
+            pubdate.replace(tzinfo=pytz.timezone("GMT"))
 
         newsStory = NewsStory(guid, title, description, link, pubdate)
         ret.append(newsStory)
@@ -342,8 +346,8 @@ def main_thread(master):
             # Get stories from Google's Top Stories RSS news feed
             stories = process("http://news.google.com/news?output=rss")
 
-            # The Yahoo's RSS feed no longer includes descriptions, so this flow is turned off.
-            # stories.extend(process("http://news.yahoo.com/rss/topstories"))
+            # Get stories from Yahoo's Top Stories RSS news feed
+            stories.extend(process("http://news.yahoo.com/rss/topstories"))
 
             # Filter stories according to specified triggers.
             stories = filter_stories(stories, trigger_list)
